@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+export async function POST(request: Request){ const body=await request.json(); const client=await prisma.cAClient.create({data:{caProfileId:body.caProfileId,name:body.name,businessName:body.businessName,gstNumber:body.gstNumber,annualTurnover:Number(body.annualTurnover||0),loanAmountRequired:Number(body.loanAmountRequired||500000),gstCertificateBase64:body.gstCertificateBase64||"",itrBase64:body.itrBase64||"",bankStatementsBase64:body.bankStatementsBase64||""}}); await prisma.loanApplication.create({data:{caClientId:client.id,loanAmount:client.loanAmountRequired,purpose:"WORKING_CAPITAL",status:"DOCUMENT_UPLOADED"}}); return NextResponse.json({id:client.id}); }

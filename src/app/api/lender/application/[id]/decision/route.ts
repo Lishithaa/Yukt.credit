@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+export async function POST(request: Request, { params }: { params: { id: string } }){ const body=await request.json(); const app=await prisma.loanApplication.findUnique({where:{id:params.id}}); if(!app) return NextResponse.json({error:"Not found"},{status:404}); const status=body.decision==="APPROVED"?"APPROVED":"REJECTED"; await prisma.loanApplication.update({where:{id:params.id},data:{status,rejectionReason:status==="REJECTED"?body.reason||"Rejected by lender":null,commissionRate:Number(body.commissionRate||1.5)}}); return NextResponse.json({ok:true}); }
